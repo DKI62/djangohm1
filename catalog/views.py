@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Product
 
 
 def index(request):
-    """Представление для главной страницы."""
-    return render(request, 'index.html')
+    products = Product.objects.all()  # Получаем все товары
+    context = {'object_list': products}  # Формируем контекст для шаблона
+    return render(request, 'catalog/index.html', context)  # Возвращаем шаблон с контекстом
 
 
 def contacts(request):
@@ -14,4 +16,13 @@ def contacts(request):
         email = request.POST.get('email')
         message = request.POST.get('message')
         print(f'{name}, ({email}): {message}')
-    return render(request, 'contacts.html')
+    return render(request, 'catalog/contacts.html')
+
+
+def product_detail(request, pk):
+    # Получаем товар по его первичному ключу (pk)
+    product = get_object_or_404(Product, pk=pk)
+
+    # Передаем информацию о товаре в шаблон через контекст
+    context = {'product': product}
+    return render(request, 'catalog/product_detail.html', context)
